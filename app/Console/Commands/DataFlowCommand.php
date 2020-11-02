@@ -94,6 +94,12 @@ class DataFlowCommand extends Command
             // 补全可缺省配置项
             $config = $this->completeDefaultConfig($config);
 
+            // 检查配置有效性 此配置在解析时候进行判断
+
+            // 数据源读取
+            $originalData = $this->getOriginalData($config);
+
+
         } catch (ConfigErrorException $ce) {
 
             $this->error($ce->getErrorMsg());
@@ -108,6 +114,30 @@ class DataFlowCommand extends Command
         }
     }
 
+
+    protected function getDataSource($config)
+    {
+        // 解析数据源类型
+        switch ($config['source_driver']) {
+
+            case 'mysql' :
+                //
+                break;
+
+            case 'api' :
+                //
+                break;
+
+            case 'es' :
+
+                break;
+
+            default:
+
+                throw new ConfigErrorException("未定义的数据源驱动类型: {$config['source_driver']}");
+        }
+    }
+
     /**
      * 补全目标字段可缺省项
      *
@@ -116,12 +146,20 @@ class DataFlowCommand extends Command
      */
     protected function completeDefaultConfig($config)
     {
-        $config = collect($config['target_fields'])->map(function ($field , $key) {
+        foreach ($config['target_fields'] as $field => &$item) {
 
-
-
-
-        })->toArray();
+            // fields 为字符串 这种情况是最简写的配置 故需要补全所有后续判断所需的 key
+            // 补全 source_field、alias、calc、callback
+            if (!is_array($item)) {
+                $config['target_fields'][$field] =  [
+                    'source_field' => $field,
+                    'alias'        => null,
+                    'calc'         => null,
+                    'callback'     => null,
+                    'ignore'       => null
+                ];
+            }
+        }
 
         return $config;
     }
