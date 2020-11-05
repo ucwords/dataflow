@@ -148,8 +148,28 @@ class DataFlowCommand extends Command
     {
         foreach ($config['target_fields'] as $field => &$item) {
 
-            // fields 为字符串 这种情况是最简写的配置 故需要补全所有后续判断所需的 key
-            // 补全 source_field、alias、calc、callback
+            // 简写模式一 仅仅可用于目标字段和来源字段名字不一致且不需要其他的操作。
+            // 'target_fields' = [
+            //      'game_user_id' => 'user_id',
+            // ]
+
+            // 简写模式二 仅仅可用于目标字段和来源字段名字一致且不需要其他的操作。
+            // 'target_fields' = [
+            //      'user_id',
+            // ]
+
+            // 简写模式二 可用于指定特殊操作，部分字段可取默认。
+            // 'target_fields' = [
+            //      'callback' => 'fixedValue|0',
+            // ]
+
+            // 必须的完整配置为
+            // 'target_fields' = [
+            //  'game_user_id' => [
+            //      'source_field' => 'user_id',
+            //      'alias'        => 'user_id' ?? null
+            //
+            //
             if (!is_array($item)) {
                 $config['target_fields'][$field] =  [
                     'source_field' => $field,
@@ -159,6 +179,7 @@ class DataFlowCommand extends Command
                     'ignore'       => null
                 ];
             }
+            dd($config['target_fields']);
         }
 
         return $config;
@@ -171,7 +192,7 @@ class DataFlowCommand extends Command
      * @return mixed
      * @throws ConfigErrorException
      */
-    protected function dynamicReplaceConfig($config)
+    protected function dynamicReplaceConfig(&$config)
     {
         // 调试模式
         if (!empty($this->argv['debug'])) $config['debug'] = true;
@@ -194,6 +215,7 @@ class DataFlowCommand extends Command
         if (!empty($this->argv['clean'])) unset($config['no_clean']);
         if (!empty($this->argv['no_clean'])) $config['no_clean'] = true;
 
+        return $config;
     }
 
 

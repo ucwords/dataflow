@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'test_job' => [
+    'test_job_2' => [
         'source_connection' => 'dl_hongbao_222',
         'source_table' => 'user_join',
         'target_connection' => 'dl_hongbao_222',
@@ -50,6 +50,6 @@ return [
             ],
         ],
         'middleware' => ['App\EData\Middleware\Game' => 'fillMxServerName'],
-        'write_type' => 'ff'
+        'write_type' => 'insertUpdate'
     ]
 ];
